@@ -1,0 +1,443 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+/* Reset basic styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins',Arial, sans-serif;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Start aligning from the top */
+  align-items: center;
+  height: 100vh; /* Take up the entire height of the viewport */
+  overflow-y: auto; /* Allow vertical scrolling if needed */
+  padding: 20px; /* Add some padding to prevent content from sticking to the edge */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.cards-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 20px;
+  transition: transform 0.5s ease-in-out;
+}
+
+/* Card Styles */
+.card {
+  margin-top: 50px;
+  width: 250px;
+  height: 350px;
+  perspective: 1000px;
+  transition: transform 0.5s ease;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-front {
+  background-color: #3498db;
+  color: white;
+  padding: 10px;
+}
+
+.card-back {
+  background-color: #f39c12;
+  color: white;
+  transform: rotateY(180deg);
+  padding: 20px;
+  display: block;
+  text-align: left;
+  overflow-y: hidden;
+  font-size: 12px;
+}
+
+/* Modal (Styled as Card) */
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  z-index: 1000;
+}
+
+/* Form Label */
+.modal label {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Form Input Styling */
+.modal input, .modal textarea {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1em;
+  font-family: 'Poppin';
+}
+
+/* Input focus */
+.modal input:focus, .modal textarea:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Textarea Style */
+.modal textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Modal Buttons Container */
+.modal .button-container {
+  display: flex;
+  justify-content: space-between; /* Space out the buttons */
+  gap: 10px; /* Optional: adds space between buttons */
+}
+
+.modal button {
+  padding: 10px 20px;
+  font-size: 1.1em;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.modal button:hover {
+  background-color: #2980b9; /* Darker blue when hovering */
+}
+
+#save-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+#save-btn:hover {
+  background-color: #2980b9;
+}
+
+.close-btn {
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  padding: 10px 15px;
+  font-size: 1.2em;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  background-color: #c0392b;
+}
+
+/* Modal Transition */
+.modal.show {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Optional Button Container */
+.button-container {
+  display: flex;
+  justify-content: space-evenly; /* Space buttons evenly with equal gaps */
+  gap: 10px;
+  align-items: center; /* Vertically center the buttons */
+}
+
+/* Optional: Styling for buttons */
+.button-container button {
+  padding: 10px 20px; /* Add some padding to the buttons */
+  font-size: 16px; /* Adjust button font size */
+  cursor: pointer; /* Change cursor to pointer on hover */
+  border: none; /* Remove button border */
+  border-radius: 5px; /* Optional: Rounded corners */
+  background-color: #3498db; /* Blue color */
+  color: white; /* Text color */
+  transition: background-color 0.3s ease; /* Smooth background color change */
+}
+
+.button-container button:hover {
+  background-color: #2980b9; /* Darker blue when hovering */
+}
+
+/* Modal Background (Slightly Transparent) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 999;
+  display: none;
+}
+
+.modal-overlay.show {
+  display: block;
+}
+
+/* Styling for shuffle, add, edit, delete buttons */
+.shuffle-btn, .add-btn, .edit-btn, .delete-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.shuffle-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.shuffle-btn:hover {
+  background-color: #2980b9;
+}
+
+.add-btn {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.add-btn:hover {
+  background-color: #27ae60;
+}
+
+.edit-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #27b652;
+  font-weight: bold;
+}
+
+.edit-btn:hover {
+  background-color: #e67e22;
+}
+
+/* Positioning the delete button */
+.delete-btn {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.delete-btn i {
+  font-size: 20px;
+}
+
+.delete-btn:hover {
+  color: #c0392b; /* Darker red on hover */
+}
+
+/* Optionally add a little shadow or transition effect */
+.delete-btn:focus {
+  outline: none;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+.card {
+  margin-top: 50px;
+  width: 250px;
+  height: 350px;
+  perspective: 1000px;
+  transition: transform 0.5s ease;
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+}
+
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-front {
+  background-color: #3498db;
+  color: white;
+  padding: 10px;
+}
+
+.card-back {
+  position: relative;
+  background-color: #f39c12;
+  color: white;
+  transform: rotateY(180deg);
+  padding: 20px;
+  display: block;
+  text-align: left;
+  overflow-y: hidden;
+  font-size: 12px;
+}
+
+.card-back h3,
+.card-back p {
+  margin-bottom: 10px;
+}
+
+.card-back h3 {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.card-back p {
+  line-height: 1.6;
+}
+
+.card-back p:first-of-type {
+  margin-top: 10px;
+}
+
+.card-back p:last-of-type {
+  margin-bottom: 10px;
+}
+
+/* New styling to color code 예문 and Related Words */
+.card-back .example {
+  color: #2ecc71; /* Example color */
+}
+
+.card-back .related-words {
+  color: #4f91a1; /* Related words color */
+}
+
+ul {
+  list-style-type: none;
+}
+
+ul li {
+  margin: 5px 0;
+}
+
+h2, h3, h4, p {
+  text-align: center;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.bold-word {
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+.hidden-meaning {
+  opacity: 0;
+  color: #3498db;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.card-inner.flipped .hidden-meaning {
+  opacity: 1;
+  color: #5976b6;
+}
+
+.add-card-form {
+  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  background-color: #3498db;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-card-form input,
+.add-card-form textarea {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.add-card-form button {
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-card-form button:hover {
+  background-color: #2980b9;
+}
