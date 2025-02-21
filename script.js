@@ -56,56 +56,57 @@ class Flashcard {
         return formattedRelatedWords;
     }
 
-    createCard() {
+    createCard(index) {
         const card = document.createElement('div');
         card.classList.add('card');
         card.setAttribute('onclick', 'flipCard(this)');
-
+    
         const cardInner = document.createElement('div');
         cardInner.classList.add('card-inner');
-
+    
         const cardFront = document.createElement('div');
         cardFront.classList.add('card-front');
         const word = document.createElement('h2');
         word.textContent = this.word;
         cardFront.appendChild(word);
-
+    
         const cardBack = document.createElement('div');
         cardBack.classList.add('card-back');
-
+    
         const meaning = document.createElement('h3');
         meaning.textContent = `${this.meaning}`;
         meaning.classList.add('hidden-meaning');
-
+    
         const example = document.createElement('p');
         example.innerHTML = `<span class="example">예문: </span>${this.boldWords(this.processLineBreaks(this.example), this.word)}`;
-
+    
         const relatedWords = document.createElement('p');
         relatedWords.innerHTML = `<span class="related-words">Related words: </span>${this.processRelatedWords(this.relatedWords)}`;
-
+    
         cardBack.appendChild(meaning);
         cardBack.appendChild(example);
         cardBack.appendChild(relatedWords);
-
+    
         cardInner.appendChild(cardFront);
         cardInner.appendChild(cardBack);
-
+    
         card.appendChild(cardInner);
-
-        // Add Edit Button
+    
+        // Add Edit Button with correct index
         const editButton = document.createElement('button');
         editButton.textContent = "✎";
         editButton.classList.add('edit-btn');
+        editButton.setAttribute('data-index', index); // Correct index for the card
         editButton.setAttribute('onclick', 'editCard(this)');
         cardBack.appendChild(editButton);
-
-        // Add Delete Button (using Font Awesome trash icon)
+    
+        // Add Delete Button
         const deleteButton = document.createElement('button');
         deleteButton.classList.add('delete-btn');
         deleteButton.setAttribute('onclick', 'deleteCard(this)');
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
         cardBack.appendChild(deleteButton);
-
+    
         return card;
     }
 }
@@ -115,9 +116,9 @@ function generateCards() {
     const cardsWrapper = document.getElementById('cardsWrapper');
     cardsWrapper.innerHTML = '';
 
-    vocabulary.forEach(item => {
+    vocabulary.forEach((item, index) => {
         const flashcard = new Flashcard(item.word, item.meaning, item.example, item.relatedWords);
-        const cardElement = flashcard.createCard();
+        const cardElement = flashcard.createCard(index);
         cardsWrapper.appendChild(cardElement);
     });
 }
@@ -215,5 +216,65 @@ function deleteCard(button) {
     localStorage.setItem("vocabulary", JSON.stringify(vocabulary));
 }
 
-// Initialize cards
-generateCards();
+// Function to update the edited card data
+function updateCard() {
+    const modal = document.getElementById('editCardModal');
+    const index = modal.dataset.index;  // Retrieve the index of the card to update from the modal's data-index
+
+    const updatedWord = document.getElementById('editWord').value;
+    const updatedMeaning = document.getElementById('editMeaning').value;
+    const updatedExample = document.getElementById('editExample').value;
+    const updatedRelatedWords = document.getElementById('editRelatedWords').value;
+
+    if (updatedWord.trim() && updatedMeaning.trim() && updatedExample.trim() && updatedRelatedWords.trim()) {
+        // Update the vocabulary array with the new data
+        vocabulary[index] = {
+            word: updatedWord,
+            meaning: updatedMeaning,
+            example: updatedExample,
+            relatedWords: updatedRelatedWords
+        };
+
+        // Save the updated vocabulary array to localStorage
+        localStorage.setItem("vocabulary", JSON.stringify(vocabulary));
+
+        // Regenerate the cards to reflect the updated data
+        generateCards();
+
+        // Close the edit modal
+        closeEditModal();
+    }
+}
+
+// Function to show the edit modal with current card data
+function editCard(button) {
+    const modal = document.getElementById('editCardModal');
+    const index = button.getAttribute('data-index');  // Get the correct index of the card to edit
+    const card = vocabulary[index];  // Fetch the card data from the vocabulary array using the index
+
+    // Set the input fields with the current card data
+    document.getElementById('editWord').value = card.word;
+    document.getElementById('editMeaning').value = card.meaning;
+    document.getElementById('editExample').value = card.example;
+    document.getElementById('editRelatedWords').value = card.relatedWords;
+
+    modal.dataset.index = index;  // Store the index in the modal's data-index attribute
+    modal.style.display = 'flex';  // Show the modal
+}
+
+// Function to close the edit modal
+function closeEditModal() {
+    const modal = document.getElementById('editCardModal');
+    modal.style.display = 'none';  // Hide the modal
+
+    // Clear the form fields when closing the modal
+    document.getElementById('editWord').value = '';
+    document.getElementById('editMeaning').value = '';
+    document.getElementById('editExample').value = '';
+    document.getElementById('editRelatedWords').value = '';
+}
+
+// Initialize cards on page load
+document.addEventListener('DOMContentLoaded', function() {
+    generateCards();
+});
